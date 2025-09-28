@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Discord Webhook Sender</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #2f3136;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    h1 {
+      color: #7289da;
+    }
+    form {
+      background: #36393f;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    button {
+      background: #7289da;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #5b6eae;
+    }
+    .status {
+      margin-top: 10px;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📨 Discord Webhook Sender</h1>
+  <form id="webhookForm">
+    <input type="text" id="username" placeholder="Bot-Name (optional)" />
+    <textarea id="message" placeholder="Deine Nachricht..." required></textarea>
+    <button type="submit">📤 Senden</button>
+    <div class="status" id="status"></div>
+  </form>
+
+  <script>
+    const webhookUrl = "https://discord.com/api/webhooks/DEIN_WEBHOOK_ID/DEIN_TOKEN"; // 👈 hier ersetzen
+
+    document.getElementById("webhookForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const message = document.getElementById("message").value.trim();
+      const username = document.getElementById("username").value.trim();
+      const statusDiv = document.getElementById("status");
+
+      if (!message) {
+        statusDiv.textContent = "⚠️ Bitte eine Nachricht eingeben!";
+        statusDiv.style.color = "orange";
+        return;
+      }
+
+      const payload = {
+        content: message,
+        username: username || "WebhookBot"
+      };
+
+      try {
+        const response = await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          statusDiv.textContent = "✅ Nachricht erfolgreich gesendet!";
+          statusDiv.style.color = "lightgreen";
+          document.getElementById("message").value = "";
+        } else {
+          statusDiv.textContent = "❌ Fehler beim Senden!";
+          statusDiv.style.color = "red";
+        }
+      } catch (err) {
+        statusDiv.textContent = "🚨 Netzwerkfehler oder falsche URL!";
+        statusDiv.style.color = "red";
+      }
+    });
+  </script>
+
+</body>
+</html>
